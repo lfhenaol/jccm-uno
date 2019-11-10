@@ -1,4 +1,6 @@
-import { deepCloneObject } from '../helpers/deep-clone-object';
+import {deepCloneObject} from '../helpers/deep-clone-object';
+import {Random} from 'random-js';
+import {StatusTeam} from "../actions";
 
 enum Modules {
   W = 'W',
@@ -24,7 +26,8 @@ interface ConfigComponentGenerator {
   integrator?: IntegratorComponents;
 }
 
-interface Component {
+export interface Component {
+  id: string;
   name: string;
   mod: Modules | null;
   compound: boolean;
@@ -73,6 +76,7 @@ function generateComponents({
   integrator
 }: ConfigComponentGenerator): Component[] {
   const baseComponent: Component = {
+    id: '',
     name: '',
     mod: null,
     compound: false,
@@ -88,288 +92,159 @@ function generateComponents({
   const components: Component[] = [];
   const options = compound ? 'compound' : integrator ? 'integrator' : '';
 
-  switch (options) {
-    case 'compound':
-      baseComponent.description = `Componente compuesto del <strong>módulo ${mod}</strong>.`;
-      baseComponent.score = 20;
-      baseComponent.compound = true;
-      baseComponent.name = `CC-M${mod}`;
-      baseComponent.mod = mod;
-      //@ts-ignore
-      baseComponent.type.icon = helpCompoundComponents[compound].icon;
-      //@ts-ignore
-      baseComponent.type.text = helpCompoundComponents[compound].text;
-      //@ts-ignore
-      baseComponent.help = helpCompoundComponents[compound].help;
-      for (let i = 0; i < 2; i++) {
-        const component = deepCloneObject(baseComponent);
-        components.push(component);
-      }
-      break;
-    case 'integrator':
-      baseComponent.description = `Componente integrador.`;
-      baseComponent.score = 50;
-      baseComponent.integrator = true;
-      baseComponent.name = 'CI';
-      //@ts-ignore
-      baseComponent.type.icon = helpIntegratorComponents[integrator].icon;
-      //@ts-ignore
-      baseComponent.type.text = helpIntegratorComponents[integrator].text;
-      //@ts-ignore
-      baseComponent.help = helpIntegratorComponents[integrator].help;
-      for (let i = 0; i < 4; i++) {
-        const component = deepCloneObject(baseComponent);
-        components.push(component);
-      }
-      break;
-    default:
-      baseComponent.description = `Componente del <strong>módulo ${mod}</strong>.`;
-      for (let i = 0; i < 19; i++) {
-        const component = deepCloneObject(baseComponent);
-        const metric = i < 10 ? i : i - 9;
-        component.name = `C-M${mod}`;
-        component.mod = mod;
-        component.type.text = `JCCM ${metric}`;
-        component.help = `Componente con medida JCCM ${metric}`;
-        component.score = metric;
-        components.push(component);
-      }
+  if (options === 'compound') {
+    baseComponent.description = `Componente compuesto del <strong>módulo ${mod}</strong>.`;
+    baseComponent.score = 20;
+    baseComponent.compound = true;
+    baseComponent.name = `CC-M${mod}`;
+    baseComponent.mod = mod;
+    //@ts-ignore
+    baseComponent.type.icon = helpCompoundComponents[compound].icon;
+    //@ts-ignore
+    baseComponent.type.text = helpCompoundComponents[compound].text;
+    //@ts-ignore
+    baseComponent.help = helpCompoundComponents[compound].help;
+    for (let i = 0; i < 2; i++) {
+      const component = deepCloneObject(baseComponent);
+      components.push(component);
+    }
+  } else if (options === 'integrator') {
+    baseComponent.description = `Componente integrador.`;
+    baseComponent.score = 50;
+    baseComponent.integrator = true;
+    baseComponent.name = 'CI';
+    //@ts-ignore
+    baseComponent.type.icon = helpIntegratorComponents[integrator].icon;
+    //@ts-ignore
+    baseComponent.type.text = helpIntegratorComponents[integrator].text;
+    //@ts-ignore
+    baseComponent.help = helpIntegratorComponents[integrator].help;
+    for (let i = 0; i < 4; i++) {
+      const component = deepCloneObject(baseComponent);
+      components.push(component);
+    }
+  } else {
+    baseComponent.description = `Componente del <strong>módulo ${mod}</strong>.`;
+    for (let i = 0; i < 19; i++) {
+      const component = deepCloneObject(baseComponent);
+      const metric = i < 10 ? i : i - 9;
+      component.name = `C-M${mod}`;
+      component.mod = mod;
+      component.type.text = `JCCM ${metric}`;
+      component.help = `Componente con medida JCCM ${metric}`;
+      component.score = metric;
+      components.push(component);
+    }
   }
   return components;
 }
 
-export const components = [
-  ...generateComponents({ mod: Modules.W }),
-  ...generateComponents({
-    mod: Modules.W,
-    compound: CompoundComponents.plusTwo
-  }),
+function generateComponentsFor(mod: Modules) {
+  return [
+    ...generateComponents({ mod }),
+    ...generateComponents({
+      mod,
+      compound: CompoundComponents.plusTwo
+    }),
+    ...generateComponents({
+      mod,
+      compound: CompoundComponents.stop
+    }),
+    ...generateComponents({
+      mod,
+      compound: CompoundComponents.reverse
+    })
+  ];
+}
+
+function random(a: number, b: number) {
+  const rand = new Random();
+  return rand.integer(a, b);
+}
+
+function getRandomComponents(list: any[], amount?: number): any[] {
+  console.log(list.length);
+  const result = [];
+  let count = 0;
+  while (Array.isArray(list) && list.length > 0) {
+    const elem = list.splice(random(0, list.length - 1), 1)[0];
+    result.push(elem);
+    if (amount && !isNaN(Number(amount)) && (amount - 1) === count) {
+      return result;
+    }
+    count++;
+  }
+  return result;
+}
+
+export function popSevenRandomComponents(list: any[]) {
+  return getRandomComponents(list, 7);
+}
+
+let materials = [
+  ...generateComponentsFor(Modules.W),
+  ...generateComponentsFor(Modules.X),
+  ...generateComponentsFor(Modules.Y),
+  ...generateComponentsFor(Modules.Z),
   ...generateComponents({
     mod: null,
     integrator: IntegratorComponents.plusFour
+  }),
+  ...generateComponents({
+    mod: null,
+    integrator: IntegratorComponents.chooseModule
   })
+].map((component, index) => {
+  component.id = index.toString();
+  return component;
+});
+
+materials = getRandomComponents(materials);
+
+console.log(materials.length);
+
+export interface Team {
+  name: string;
+  status: StatusTeam;
+  components: Component[]
+}
+
+export const teams: Team[] = [
+  {
+    name: 'Equipo 1',
+    status: StatusTeam.ESTIMING,
+    components: popSevenRandomComponents(materials)
+  },
+  {
+    name: 'Equipo 2',
+    status: StatusTeam.WAITING,
+    components: popSevenRandomComponents(materials)
+  },
+  {
+    name: 'Equipo 3',
+    status: StatusTeam.WAITING,
+    components: popSevenRandomComponents(materials)
+  },
+  {
+    name: 'Equipo 4',
+    status: StatusTeam.WAITING,
+    components: popSevenRandomComponents(materials)
+  },
+  {
+    name: 'Equipo 5',
+    status: StatusTeam.WAITING,
+    components: popSevenRandomComponents(materials)
+  },
+  {
+    name: 'Equipo 6',
+    status: StatusTeam.WAITING,
+    components: popSevenRandomComponents(materials)
+  },
+  {
+    name: 'Equipo 7',
+    status: StatusTeam.WAITING,
+    components: popSevenRandomComponents(materials)
+  }
 ];
 
-export const materials = {
-  component1: {
-    name: 'C-MW',
-    mod: 'W',
-    compound: false,
-    integrator: false,
-    type: {
-      text: 'JCCM 0',
-      icon: null
-    },
-    help: 'Componente con medida JCCM 0',
-    description: 'Componente del <strong>módulo W</strong>.',
-    score: 0
-  },
-  component2: {
-    name: 'C-MW',
-    mod: 'W',
-    compound: false,
-    integrator: false,
-    type: {
-      text: 'JCCM 1',
-      icon: null
-    },
-    help: 'Componente con medida JCCM 1',
-    description: 'Componente del <strong>módulo W</strong>.',
-    score: 1
-  },
-  component3: {
-    name: 'C-MW',
-    mod: 'W',
-    compound: false,
-    integrator: false,
-    type: {
-      text: 'JCCM 2',
-      icon: null
-    },
-    help: 'Componente con medida JCCM 2',
-    description: 'Componente del <strong>módulo W</strong>.',
-    score: 2
-  },
-  component4: {
-    name: 'C-MW',
-    mod: 'W',
-    compound: false,
-    integrator: false,
-    type: {
-      text: 'JCCM 3',
-      icon: null
-    },
-    help: 'Componente con medida JCCM 3',
-    description: 'Componente del <strong>módulo W</strong>.',
-    score: 3
-  },
-  component5: {
-    name: 'C-MW',
-    mod: 'W',
-    compound: false,
-    integrator: false,
-    type: {
-      text: 'JCCM 4',
-      icon: null
-    },
-    help: 'Componente con medida JCCM 4',
-    description: 'Componente del <strong>módulo W</strong>.',
-    score: 4
-  },
-  component6: {
-    name: 'C-MW',
-    mod: 'W',
-    compound: false,
-    integrator: false,
-    type: {
-      text: 'JCCM 5',
-      icon: null
-    },
-    help: 'Componente con medida JCCM 5',
-    description: 'Componente del <strong>módulo W</strong>.',
-    score: 5
-  },
-  component7: {
-    name: 'C-MW',
-    mod: 'W',
-    compound: false,
-    integrator: false,
-    type: {
-      text: 'JCCM 6',
-      icon: null
-    },
-    help: 'Componente con medida JCCM 6',
-    description: 'Componente del <strong>módulo W</strong>.',
-    score: 6
-  },
-  component8: {
-    name: 'C-MW',
-    mod: 'W',
-    compound: false,
-    integrator: false,
-    type: {
-      text: 'JCCM 7',
-      icon: null
-    },
-    help: 'Componente con medida JCCM 7',
-    description: 'Componente del <strong>módulo W</strong>.',
-    score: 7
-  },
-  component9: {
-    name: 'C-MW',
-    mod: 'W',
-    compound: false,
-    integrator: false,
-    type: {
-      text: 'JCCM 8',
-      icon: null
-    },
-    help: 'Componente con medida JCCM 8',
-    description: 'Componente del <strong>módulo W</strong>.',
-    score: 8
-  },
-  component10: {
-    name: 'C-MW',
-    mod: 'W',
-    compound: false,
-    integrator: false,
-    type: {
-      text: 'JCCM 9',
-      icon: null
-    },
-    help: 'Componente con medida JCCM 9',
-    description: 'Componente del <strong>módulo W</strong>.',
-    score: 9
-  },
-  component11: {
-    name: 'C-MW',
-    mod: 'W',
-    compound: false,
-    integrator: false,
-    type: {
-      text: 'JCCM 1',
-      icon: null
-    },
-    help: 'Componente con medida JCCM 1',
-    description: 'Componente del <strong>módulo W</strong>.',
-    score: 1
-  },
-  component12: {
-    name: 'C-MW',
-    mod: 'W',
-    compound: false,
-    integrator: false,
-    type: {
-      text: 'JCCM 2',
-      icon: null
-    },
-    help: 'Componente con medida JCCM 2',
-    description: 'Componente del <strong>módulo W</strong>.',
-    score: 2
-  },
-  component13: {
-    name: 'C-MW',
-    mod: 'W',
-    compound: false,
-    integrator: false,
-    type: {
-      text: 'JCCM 3',
-      icon: null
-    },
-    help: 'Componente con medida JCCM 3',
-    description: 'Componente del <strong>módulo W</strong>.',
-    score: 3
-  },
-  component14: {
-    name: 'C-MW',
-    mod: 'W',
-    compound: false,
-    integrator: false,
-    type: {
-      text: 'JCCM 4',
-      icon: null
-    },
-    help: 'Componente con medida JCCM 4',
-    description: 'Componente del <strong>módulo W</strong>.',
-    score: 4
-  },
-  component15: {
-    name: 'C-MW',
-    mod: 'W',
-    compound: false,
-    integrator: false,
-    type: {
-      text: 'JCCM 5',
-      icon: null
-    },
-    help: 'Componente con medida JCCM 5',
-    description: 'Componente del <strong>módulo W</strong>.',
-    score: 5
-  },
-  component16: {
-    name: 'C-MW',
-    mod: 'W',
-    compound: false,
-    integrator: false,
-    type: {
-      text: 'JCCM 6',
-      icon: null
-    },
-    help: 'Componente con medida JCCM 6',
-    description: 'Componente del <strong>módulo W</strong>.',
-    score: 6
-  },
-  component17: {
-    name: 'C-MW',
-    mod: 'W',
-    compound: false,
-    integrator: false,
-    type: {
-      text: 'JCCM 3',
-      icon: null
-    },
-    help: 'Componente con medida JCCM 3',
-    description: 'Componente del <strong>módulo W</strong>.',
-    score: 3
-  }
-};
+export default materials;

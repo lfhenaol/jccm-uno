@@ -1,0 +1,4 @@
+export enum TeamComponentsActionTypes {
+  ADD_COMPONENT = 'ADD_COMPONENT',
+  DELIVER_COMPONENT = 'DELIVER_COMPONENT'
+}
