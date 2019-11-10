@@ -1,12 +1,13 @@
 import { List } from 'antd';
 import React from 'react';
-import { Team } from './Team';
+import { TeamMeta } from './TeamMeta';
+import { Team } from '../config/materials';
 const { Item } = List;
 
-export function TeamItem({ item }: any) {
+export function TeamItem({ team }: { team: Team }) {
   return (
     <Item>
-      <Team item={item} />
+      <TeamMeta nameTeam={team.name} status={team.status} />
     </Item>
   );
 }

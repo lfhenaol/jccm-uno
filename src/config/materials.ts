@@ -201,8 +201,6 @@ let materials = [
 
 materials = getRandomComponents(materials);
 
-console.log(materials.length);
-
 export interface Team {
   name: string;
   status: StatusTeam;

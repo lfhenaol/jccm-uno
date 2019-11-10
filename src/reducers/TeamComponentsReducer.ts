@@ -1,12 +1,9 @@
-import materials, {
-  Component,
-  popSevenRandomComponents
-} from '../config/materials';
+import { Component } from '../config/materials';
 import { TeamComponentsActionTypes } from '../action-types';
 import { TeamActionTypesI } from '../actions';
 
 export function teamComponentsReducer(
-  state: Component[] | any,
+  state: Component[] = [],
   action: TeamActionTypesI | any
 ): Component[] {
   switch (action.type) {
@@ -15,9 +12,6 @@ export function teamComponentsReducer(
     case TeamComponentsActionTypes.DELIVER_COMPONENT:
       return state.filter((component: Component) => component.id !== action.id);
     default:
-      if (typeof state === 'undefined') {
-        return popSevenRandomComponents(materials);
-      }
       return state;
   }
 }

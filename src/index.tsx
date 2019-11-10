@@ -1,13 +1,18 @@
-import React from 'react';
+import React, { createContext } from 'react';
 import ReactDOM from 'react-dom';
 import App from './containers/App';
 import * as serviceWorker from './serviceWorker';
-import materials from "./config/materials";
-
 import './app.less';
+import { Team, teams } from './config/materials';
 
-console.log(materials);
-ReactDOM.render(<App />, document.getElementById('root'));
+export const TeamsContext = createContext<Team[]>([]);
+
+ReactDOM.render(
+  <TeamsContext.Provider value={teams}>
+    <App />
+  </TeamsContext.Provider>,
+  document.getElementById('root')
+);
 
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
