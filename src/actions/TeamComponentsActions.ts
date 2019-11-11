@@ -20,6 +20,13 @@ export interface UpdateModuleIntegratorComponentAction {
   module: string;
 }
 
+export interface UpdateDescriptionIntegratorComponentAction {
+  type: typeof TeamComponentsActionTypes.UPDATE_DESCRIPTION_IN_INTEGRATOR_COMPONENT;
+  componentId: string;
+  teamId: string;
+  description: string;
+}
+
 export function addComponent(
   component: Component,
   teamId: string
@@ -52,5 +59,18 @@ export function updateModuleIntegratorComponent(
     componentId,
     teamId,
     module
+  };
+}
+
+export function updateDescriptionIntegratorComponent(
+  componentId: string,
+  teamId: string,
+  description: string
+): UpdateDescriptionIntegratorComponentAction {
+  return {
+    type: TeamComponentsActionTypes.UPDATE_DESCRIPTION_IN_INTEGRATOR_COMPONENT,
+    componentId,
+    teamId,
+    description
   };
 }

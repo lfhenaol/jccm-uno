@@ -2,7 +2,6 @@ import { Row } from 'antd';
 import React from 'react';
 import {
   Component,
-  CompoundComponents,
   IntegratorComponents,
   Modules,
   Team
@@ -13,48 +12,21 @@ import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 import { ComponentItem } from '../components/ComponentItem';
 import { changeStatus } from '../actions/TeamActions';
+import { canDeliverComponent, triggerEventComponent } from '../config/rules';
 
 function ComponentsContainer({
   currentTeamEstimating,
   onDeliverComponent,
   lastEvaluatedComponent,
-  nextTeam
+  nextTeam,
+  componentsToBeEvaluated
 }: {
   currentTeamEstimating?: Team;
   onDeliverComponent: Function;
   lastEvaluatedComponent: Component;
   nextTeam: Team;
+  componentsToBeEvaluated: Component[];
 }) {
-  const canDeliverComponent = (component: Component): (() => boolean) => {
-    return () => {
-      if (!lastEvaluatedComponent || component.integrator) {
-        return true;
-      }
-
-      if (lastEvaluatedComponent.integrator) {
-        switch (lastEvaluatedComponent.type.code) {
-          case IntegratorComponents.chooseModule:
-            return lastEvaluatedComponent.mod === component.mod;
-          case IntegratorComponents.plusFour:
-            return true;
-        }
-      } else if (lastEvaluatedComponent.compound) {
-        switch (lastEvaluatedComponent.type.code) {
-          case CompoundComponents.reverse:
-          case CompoundComponents.stop:
-          case CompoundComponents.plusTwo:
-            return lastEvaluatedComponent.mod === component.mod;
-        }
-      } else {
-        return (
-          lastEvaluatedComponent.mod === component.mod ||
-          lastEvaluatedComponent.score === component.score
-        );
-      }
-
-      return false;
-    };
-  };
   return (
     <Row gutter={16}>
       {(currentTeamEstimating as Team).components.map(component => (
@@ -63,7 +35,12 @@ function ComponentsContainer({
           teamId={(currentTeamEstimating as Team).id}
           component={component}
           nextTeam={nextTeam}
-          onCanDeliverComponent={canDeliverComponent(component)}
+          onCanDeliverComponent={canDeliverComponent(
+            lastEvaluatedComponent,
+            component,
+            currentTeamEstimating
+          )}
+          componentsToBeEvaluated={componentsToBeEvaluated}
           onDeliverComponent={onDeliverComponent}
         />
       ))}
@@ -79,6 +56,7 @@ function mapStateToProps(state: JCCMUNOAppStore) {
   let indexNextTeam = state.Teams.indexOf(currentTeamEstimating) + 1;
   indexNextTeam = indexNextTeam < state.Teams.length ? indexNextTeam : 0;
   return {
+    componentsToBeEvaluated: state.BankComponentsToBeEvaluated,
     nextTeam: state.Teams[indexNextTeam],
     lastEvaluatedComponent:
       state.BankEvaluatedComponents[state.BankEvaluatedComponents.length - 1],
@@ -88,12 +66,19 @@ function mapStateToProps(state: JCCMUNOAppStore) {
 
 function mapDispatchToProps(dispatch: Dispatch) {
   return {
-    onDeliverComponent: (
-      component: Component,
-      teamId: string,
-      handleModalChooseModule: () => Promise<any>,
-      nextTeam: Team
-    ) => {
+    onDeliverComponent: ({
+      component,
+      teamId,
+      handleModalChooseModule,
+      nextTeam,
+      componentsToBeEvaluated
+    }: {
+      component: Component;
+      teamId: string;
+      handleModalChooseModule: () => Promise<any>;
+      nextTeam: Team;
+      componentsToBeEvaluated: Component[];
+    }) => {
       debugger;
       const promise: Promise<Component> = new Promise((resolve, reject) => {
         if (
@@ -103,7 +88,12 @@ function mapDispatchToProps(dispatch: Dispatch) {
           handleModalChooseModule()
             .then((module: Modules) => {
               //dispatch(updateModuleIntegratorComponent(component.id, teamId, module));
-              resolve(Object.assign({}, component, { mod: module }));
+              resolve(
+                Object.assign({}, component, {
+                  mod: module,
+                  description: `Componente integrador <strong>para el módulo ${module}</strong>.`
+                })
+              );
             })
             .catch(() => {
               reject();
@@ -117,8 +107,15 @@ function mapDispatchToProps(dispatch: Dispatch) {
         .then((newComponent: Component) => {
           dispatch(addToBank(newComponent || component));
           dispatch(deliverComponent(component.id, teamId));
+          alert(`Termina entrega para el Equipo ${Number(teamId) + 1}`);
           dispatch(changeStatus(StatusTeam.ESTIMATING, nextTeam.id));
           dispatch(changeStatus(StatusTeam.WAITING, teamId));
+          triggerEventComponent({
+            teamId: nextTeam.id,
+            dispatch,
+            lastEvaluatedComponent: newComponent || component,
+            componentsToBeEvaluated
+          });
         })
         .catch(() => null);
     }

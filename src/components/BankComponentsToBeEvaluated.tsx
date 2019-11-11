@@ -1,31 +1,51 @@
-import { Card, Empty, Typography } from 'antd';
+import { Button, Card, Col, Empty, Row } from 'antd';
 import React from 'react';
-import { Component } from '../config/materials';
+import { Component, Team } from '../config/materials';
 const { Meta } = Card;
-const { Title } = Typography;
 
 export function BankComponentsToBeEvaluated({
-  componentsToBeEvaluated,
   onTakeComponent,
-  teamId
+  currentTeamEstimating,
+  lastComponentToBeEvaluated,
+  onCanTakeComponent,
+  nextTeam,
+  lastEvaluatedComponent
 }: {
-  componentsToBeEvaluated?: Component[];
-  onTakeComponent?: Function;
-  teamId?: string;
+  onTakeComponent: Function;
+  currentTeamEstimating: Team;
+  lastComponentToBeEvaluated: Component;
+  onCanTakeComponent: Function;
+  nextTeam: Team;
+  lastEvaluatedComponent: Component;
 }) {
-  const lastComponent =
-    // @ts-ignore
-    componentsToBeEvaluated[componentsToBeEvaluated.length - 1];
+  console.log('DISABLE TAKE COMPONENT', !onCanTakeComponent());
+  const handleTakeComponent = (component: Component) => {
+    debugger;
+    return onCanTakeComponent()
+      ? onTakeComponent({
+          component,
+          teamId: currentTeamEstimating.id,
+          lastEvaluatedComponent,
+          nextTeam
+        })
+      : null;
+  };
+
   const elemLastComponent = (component: Component) => (
-    <Card
-      style={{ height: 170 }}
-      hoverable={true}
-      // @ts-ignore
-      onClick={() => onTakeComponent(component, teamId)}
-    >
-      <Title level={3} className="text-center">
-        Tomar componente
-      </Title>
+    <Card style={{ height: 170 }} hoverable={true}>
+      <Row type="flex" justify="center" align="middle" style={{ height: 115 }}>
+        <Col>
+          <Button
+            // @ts-ignore
+            onClick={() => handleTakeComponent(component)}
+            disabled={!onCanTakeComponent()}
+            htmlType="button"
+            type="primary"
+          >
+            Tomar componente
+          </Button>
+        </Col>
+      </Row>
     </Card>
   );
   return (
@@ -33,8 +53,8 @@ export function BankComponentsToBeEvaluated({
       hoverable
       style={{ width: 240 }}
       cover={
-        lastComponent ? (
-          elemLastComponent(lastComponent)
+        lastComponentToBeEvaluated ? (
+          elemLastComponent(lastComponentToBeEvaluated)
         ) : (
           <Empty
             image={Empty.PRESENTED_IMAGE_SIMPLE}

@@ -8,13 +8,15 @@ export function ComponentItem({
   teamId,
   onDeliverComponent,
   onCanDeliverComponent,
-  nextTeam
+  nextTeam,
+  componentsToBeEvaluated
 }: {
   component: Component;
   teamId: string;
   onDeliverComponent: Function;
   onCanDeliverComponent: Function;
   nextTeam: Team;
+  componentsToBeEvaluated: Component[];
 }) {
   const [resolvePromise, setResolvePromise] = useState<
     (module: Modules) => void
@@ -79,7 +81,13 @@ export function ComponentItem({
           <Col>
             <Button
               onClick={() =>
-                onDeliverComponent(component, teamId, handleModalChooseModule, nextTeam)
+                onDeliverComponent({
+                  component,
+                  teamId,
+                  handleModalChooseModule,
+                  nextTeam,
+                  componentsToBeEvaluated
+                })
               }
             >
               Entregar

@@ -5,27 +5,42 @@ import { BankEvaluatedComponents } from '../components/BankEvaluatedComponents';
 import { JCCMUNOAppStore } from '../reducers';
 import { addComponent, deleteComponent, StatusTeam } from '../actions';
 import { Dispatch } from 'redux';
-import { Component } from '../config/materials';
+import { Component, Team } from '../config/materials';
 import { connect } from 'react-redux';
+import { canDeliverComponent, canTakeComponent } from '../config/rules';
+import { changeStatus } from '../actions/TeamActions';
 
 function BanksContainer({
-  ComponentsToBeEvaluated,
-  teamId,
+  currentTeamEstimating,
   EvaluatedComponents,
-  onTakeComponent
+  onTakeComponent,
+  lastEvaluatedComponent,
+  lastComponentToBeEvaluated,
+  nextTeam
 }: {
-  ComponentsToBeEvaluated?: Component[];
-  teamId?: string;
+  currentTeamEstimating?: Team;
   EvaluatedComponents?: Component[];
   onTakeComponent?: Function;
+  lastEvaluatedComponent: Component;
+  lastComponentToBeEvaluated: Component;
+  nextTeam: Team;
 }) {
   return (
     <Row>
       <Col sm={12} className="d-flex justify-content-center">
         <BankComponentsToBeEvaluated
-          teamId={teamId}
-          componentsToBeEvaluated={ComponentsToBeEvaluated}
+          nextTeam={nextTeam}
+          lastComponentToBeEvaluated={lastComponentToBeEvaluated}
+          lastEvaluatedComponent={lastEvaluatedComponent}
+          // @ts-ignore
+          currentTeamEstimating={currentTeamEstimating}
+          // @ts-ignore
           onTakeComponent={onTakeComponent}
+          onCanTakeComponent={canTakeComponent(
+            // @ts-ignore
+            currentTeamEstimating,
+            lastEvaluatedComponent
+          )}
         />
       </Col>
       <Col sm={12} className="d-flex justify-content-center">
@@ -37,19 +52,49 @@ function BanksContainer({
 
 function mapStateToProps(state: JCCMUNOAppStore) {
   console.log(state);
+  const currentTeamEstimating = state.Teams.filter(
+    team => team.status === StatusTeam.ESTIMATING
+  )[0];
+  let indexNextTeam = state.Teams.indexOf(currentTeamEstimating) + 1;
+  indexNextTeam = indexNextTeam < state.Teams.length ? indexNextTeam : 0;
   return {
+    nextTeam: state.Teams[indexNextTeam],
+    lastComponentToBeEvaluated:
+      state.BankComponentsToBeEvaluated[
+        state.BankComponentsToBeEvaluated.length - 1
+      ],
+    lastEvaluatedComponent:
+      state.BankEvaluatedComponents[state.BankEvaluatedComponents.length - 1],
     ComponentsToBeEvaluated: state.BankComponentsToBeEvaluated,
     EvaluatedComponents: state.BankEvaluatedComponents,
-    teamId: state.Teams.filter(team => team.status === StatusTeam.ESTIMATING)[0]
-      .id
+    currentTeamEstimating
   };
 }
 
 function mapDispatchToProps(dispatch: Dispatch) {
   return {
-    onTakeComponent: (component: Component, teamId: string) => {
+    onTakeComponent: ({
+      component,
+      teamId,
+      lastEvaluatedComponent,
+      nextTeam
+    }: {
+      component: Component;
+      teamId: string;
+      lastEvaluatedComponent: Component;
+      nextTeam: Team;
+    }) => {
       dispatch(addComponent(component, teamId));
       dispatch(deleteComponent(component.id));
+      if (!canDeliverComponent(lastEvaluatedComponent, component)()) {
+        alert(
+          `El componente tomado ${component.name} no se puede entregar, termina entrega para el Equipo ${Number(
+            teamId
+          ) + 1}`
+        );
+        dispatch(changeStatus(StatusTeam.ESTIMATING, nextTeam.id));
+        dispatch(changeStatus(StatusTeam.WAITING, teamId));
+      }
     }
   };
 }
