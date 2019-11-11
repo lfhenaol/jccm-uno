@@ -1,26 +1,56 @@
 import { TeamComponentsActionTypes } from '../action-types';
-import { Component } from '../config/materials';
+import { Component, Modules } from '../config/materials';
 
 export interface AddComponentAction {
   type: typeof TeamComponentsActionTypes.ADD_COMPONENT;
   component: Component;
+  teamId: string;
 }
 
 export interface DeliverComponentAction {
   type: typeof TeamComponentsActionTypes.DELIVER_COMPONENT;
-  id: string;
+  componentId: string;
+  teamId: string;
 }
 
-export function addComponent(component: Component): AddComponentAction {
+export interface UpdateModuleIntegratorComponentAction {
+  type: typeof TeamComponentsActionTypes.UPDATE_MODULE_IN_INTEGRATOR_COMPONENT;
+  componentId: string;
+  teamId: string;
+  module: string;
+}
+
+export function addComponent(
+  component: Component,
+  teamId: string
+): AddComponentAction {
   return {
     type: TeamComponentsActionTypes.ADD_COMPONENT,
+    teamId,
     component
   };
 }
 
-export function deliverComponent(id: string): DeliverComponentAction {
+export function deliverComponent(
+  componentId: string,
+  teamId: string
+): DeliverComponentAction {
   return {
     type: TeamComponentsActionTypes.DELIVER_COMPONENT,
-    id
+    componentId,
+    teamId
+  };
+}
+
+export function updateModuleIntegratorComponent(
+  componentId: string,
+  teamId: string,
+  module: Modules
+): UpdateModuleIntegratorComponentAction {
+  return {
+    type: TeamComponentsActionTypes.UPDATE_MODULE_IN_INTEGRATOR_COMPONENT,
+    componentId,
+    teamId,
+    module
   };
 }

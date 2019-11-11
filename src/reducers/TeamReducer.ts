@@ -16,11 +16,14 @@ export function teamReducer(
     default:
       if (typeof state === 'undefined') {
         return {
+          id: '',
           name: '',
           status: StatusTeam.WAITING,
           components: teamComponentsReducer(void 0, null)
         };
       }
-      return state;
+      return Object.assign({}, state, {
+        components: teamComponentsReducer(state.components, action)
+      });
   }
 }

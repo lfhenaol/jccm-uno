@@ -15,6 +15,11 @@ export function teamsReducer(
       };
       return [...state, newTeam];
     default:
-      return state;
+      return state.map(team => {
+        if (action.teamId === team.id) {
+          return teamReducer(team, action);
+        }
+        return team;
+      });
   }
 }

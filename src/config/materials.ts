@@ -1,21 +1,21 @@
-import {deepCloneObject} from '../helpers/deep-clone-object';
-import {Random} from 'random-js';
-import {StatusTeam} from "../actions";
+import { deepCloneObject } from '../helpers/deep-clone-object';
+import { Random } from 'random-js';
+import { StatusTeam } from '../actions';
 
-enum Modules {
+export enum Modules {
   W = 'W',
   X = 'X',
   Y = 'Y',
   Z = 'Z'
 }
 
-enum CompoundComponents {
+export enum CompoundComponents {
   plusTwo = 1,
   reverse = 2,
   stop = 3
 }
 
-enum IntegratorComponents {
+export enum IntegratorComponents {
   chooseModule = 1,
   plusFour = 2
 }
@@ -32,7 +32,7 @@ export interface Component {
   mod: Modules | null;
   compound: boolean;
   integrator: boolean;
-  type: { text: string | null; icon: string | null };
+  type: { text: string | undefined; icon: string | undefined, code: number | undefined };
   help: string;
   description: string;
   score: number;
@@ -82,8 +82,9 @@ function generateComponents({
     compound: false,
     integrator: false,
     type: {
-      text: null,
-      icon: null
+      text: undefined,
+      icon: undefined,
+      code: undefined
     },
     help: '',
     description: '',
@@ -98,6 +99,8 @@ function generateComponents({
     baseComponent.compound = true;
     baseComponent.name = `CC-M${mod}`;
     baseComponent.mod = mod;
+    // @ts-ignore
+    baseComponent.type.code = compound;
     //@ts-ignore
     baseComponent.type.icon = helpCompoundComponents[compound].icon;
     //@ts-ignore
@@ -113,6 +116,8 @@ function generateComponents({
     baseComponent.score = 50;
     baseComponent.integrator = true;
     baseComponent.name = 'CI';
+    // @ts-ignore
+    baseComponent.type.code = integrator;
     //@ts-ignore
     baseComponent.type.icon = helpIntegratorComponents[integrator].icon;
     //@ts-ignore
@@ -169,7 +174,7 @@ function getRandomComponents(list: any[], amount?: number): any[] {
   while (Array.isArray(list) && list.length > 0) {
     const elem = list.splice(random(0, list.length - 1), 1)[0];
     result.push(elem);
-    if (amount && !isNaN(Number(amount)) && (amount - 1) === count) {
+    if (amount && !isNaN(Number(amount)) && amount - 1 === count) {
       return result;
     }
     count++;
@@ -202,43 +207,51 @@ let materials = [
 materials = getRandomComponents(materials);
 
 export interface Team {
+  id: string;
   name: string;
   status: StatusTeam;
-  components: Component[]
+  components: Component[];
 }
 
 export const teams: Team[] = [
   {
+    id: '0',
     name: 'Equipo 1',
     status: StatusTeam.ESTIMING,
     components: popSevenRandomComponents(materials)
   },
   {
+    id: '1',
     name: 'Equipo 2',
     status: StatusTeam.WAITING,
     components: popSevenRandomComponents(materials)
   },
   {
+    id: '2',
     name: 'Equipo 3',
     status: StatusTeam.WAITING,
     components: popSevenRandomComponents(materials)
   },
   {
+    id: '3',
     name: 'Equipo 4',
     status: StatusTeam.WAITING,
     components: popSevenRandomComponents(materials)
   },
   {
+    id: '4',
     name: 'Equipo 5',
     status: StatusTeam.WAITING,
     components: popSevenRandomComponents(materials)
   },
   {
+    id: '5',
     name: 'Equipo 6',
     status: StatusTeam.WAITING,
     components: popSevenRandomComponents(materials)
   },
   {
+    id: '6',
     name: 'Equipo 7',
     status: StatusTeam.WAITING,
     components: popSevenRandomComponents(materials)

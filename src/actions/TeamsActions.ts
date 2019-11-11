@@ -9,12 +9,14 @@ export enum StatusTeam {
 
 export interface AddToTeamsAction {
   type: typeof TeamsActionTypes.ADD_TO_TEAMS;
+  teamId: string;
   teamName: string;
 }
 
-export function addToTeams(teamName: string): AddToTeamsAction {
+export function addToTeams(teamName: string, teamId: string): AddToTeamsAction {
   return {
     type: TeamsActionTypes.ADD_TO_TEAMS,
+    teamId,
     teamName
   };
 }

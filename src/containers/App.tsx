@@ -1,14 +1,14 @@
 import React, { useContext } from 'react';
 import { Layout, Typography } from 'antd';
 import TeamsContainer from './TeamsContainer';
-import { BanksContainer } from './BanksContainer';
+import BanksContainer from './BanksContainer';
 import { HistoryContainer } from './HistoryContainer';
 import { Results } from '../components/Results';
-import { ComponentsContainer } from './ComponentsContainer';
 import { TeamsContext } from '../index';
 import { createStore } from 'redux';
 import { JCCMUNOApp } from '../reducers';
 import { Provider } from 'react-redux';
+import ComponentsContainer from './ComponentsContainer';
 const { Header, Content, Footer, Sider } = Layout;
 const { Title } = Typography;
 
