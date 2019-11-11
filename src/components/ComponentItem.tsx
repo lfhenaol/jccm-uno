@@ -1,18 +1,20 @@
 import { Button, Card, Col, Icon, Modal, Row, Tooltip } from 'antd';
 import ReactHtmlParser from 'react-html-parser';
 import React, { useState } from 'react';
-import { Component, Modules } from '../config/materials';
+import { Component, Modules, Team } from '../config/materials';
 
 export function ComponentItem({
   component,
   teamId,
   onDeliverComponent,
-  onCanDeliverComponent
+  onCanDeliverComponent,
+  nextTeam
 }: {
   component: Component;
   teamId: string;
   onDeliverComponent: Function;
   onCanDeliverComponent: Function;
+  nextTeam: Team;
 }) {
   const [resolvePromise, setResolvePromise] = useState<
     (module: Modules) => void
@@ -77,7 +79,7 @@ export function ComponentItem({
           <Col>
             <Button
               onClick={() =>
-                onDeliverComponent(component, teamId, handleModalChooseModule)
+                onDeliverComponent(component, teamId, handleModalChooseModule, nextTeam)
               }
             >
               Entregar

@@ -12,15 +12,18 @@ import { addToBank, deliverComponent, StatusTeam } from '../actions';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 import { ComponentItem } from '../components/ComponentItem';
+import { changeStatus } from '../actions/TeamActions';
 
 function ComponentsContainer({
-  currentTeamEstiming,
+  currentTeamEstimating,
   onDeliverComponent,
-  lastEvaluatedComponent
+  lastEvaluatedComponent,
+  nextTeam
 }: {
-  currentTeamEstiming?: Team;
+  currentTeamEstimating?: Team;
   onDeliverComponent: Function;
   lastEvaluatedComponent: Component;
+  nextTeam: Team;
 }) {
   const canDeliverComponent = (component: Component): (() => boolean) => {
     return () => {
@@ -54,11 +57,12 @@ function ComponentsContainer({
   };
   return (
     <Row gutter={16}>
-      {(currentTeamEstiming as Team).components.map(component => (
+      {(currentTeamEstimating as Team).components.map(component => (
         <ComponentItem
           key={component.id}
-          teamId={(currentTeamEstiming as Team).id}
+          teamId={(currentTeamEstimating as Team).id}
           component={component}
+          nextTeam={nextTeam}
           onCanDeliverComponent={canDeliverComponent(component)}
           onDeliverComponent={onDeliverComponent}
         />
@@ -69,12 +73,16 @@ function ComponentsContainer({
 
 function mapStateToProps(state: JCCMUNOAppStore) {
   console.log(state);
+  const currentTeamEstimating = state.Teams.filter(
+    team => team.status === StatusTeam.ESTIMATING
+  )[0];
+  let indexNextTeam = state.Teams.indexOf(currentTeamEstimating) + 1;
+  indexNextTeam = indexNextTeam < state.Teams.length ? indexNextTeam : 0;
   return {
+    nextTeam: state.Teams[indexNextTeam],
     lastEvaluatedComponent:
       state.BankEvaluatedComponents[state.BankEvaluatedComponents.length - 1],
-    currentTeamEstiming: state.Teams.filter(
-      team => team.status === StatusTeam.ESTIMATING
-    )[0]
+    currentTeamEstimating
   };
 }
 
@@ -83,7 +91,8 @@ function mapDispatchToProps(dispatch: Dispatch) {
     onDeliverComponent: (
       component: Component,
       teamId: string,
-      handleModalChooseModule: () => Promise<any>
+      handleModalChooseModule: () => Promise<any>,
+      nextTeam: Team
     ) => {
       debugger;
       const promise: Promise<Component> = new Promise((resolve, reject) => {
@@ -108,6 +117,8 @@ function mapDispatchToProps(dispatch: Dispatch) {
         .then((newComponent: Component) => {
           dispatch(addToBank(newComponent || component));
           dispatch(deliverComponent(component.id, teamId));
+          dispatch(changeStatus(StatusTeam.ESTIMATING, nextTeam.id));
+          dispatch(changeStatus(StatusTeam.WAITING, teamId));
         })
         .catch(() => null);
     }
