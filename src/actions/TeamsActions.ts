@@ -1,7 +1,7 @@
 import { TeamsActionTypes } from '../action-types';
 
 export enum StatusTeam {
-  ESTIMING = 'ESTIMING',
+  ESTIMATING = 'ESTIMATING',
   WAITING = 'WAITING',
   WINNER_ITERATION = 'WINNER_ITERATION',
   GLOBAL_WINNER = 'GLOBAL_WINNER'

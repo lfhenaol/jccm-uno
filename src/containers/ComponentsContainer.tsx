@@ -73,7 +73,7 @@ function mapStateToProps(state: JCCMUNOAppStore) {
     lastEvaluatedComponent:
       state.BankEvaluatedComponents[state.BankEvaluatedComponents.length - 1],
     currentTeamEstiming: state.Teams.filter(
-      team => team.status === StatusTeam.ESTIMING
+      team => team.status === StatusTeam.ESTIMATING
     )[0]
   };
 }

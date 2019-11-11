@@ -16,7 +16,7 @@ export function TeamMeta({
       title={
         <>
           <a href="https://ant.design">{nameTeam}</a>{' '}
-          <Tag color={status === StatusTeam.ESTIMING ? 'green': ''}> {status} </Tag>
+          <Tag color={status === StatusTeam.ESTIMATING ? 'green': ''}> {status} </Tag>
         </>
       }
     />

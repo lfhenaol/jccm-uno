@@ -40,7 +40,7 @@ function mapStateToProps(state: JCCMUNOAppStore) {
   return {
     ComponentsToBeEvaluated: state.BankComponentsToBeEvaluated,
     EvaluatedComponents: state.BankEvaluatedComponents,
-    teamId: state.Teams.filter(team => team.status === StatusTeam.ESTIMING)[0]
+    teamId: state.Teams.filter(team => team.status === StatusTeam.ESTIMATING)[0]
       .id
   };
 }

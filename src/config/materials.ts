@@ -217,7 +217,7 @@ export const teams: Team[] = [
   {
     id: '0',
     name: 'Equipo 1',
-    status: StatusTeam.ESTIMING,
+    status: StatusTeam.ESTIMATING,
     components: popSevenRandomComponents(materials)
   },
   {
