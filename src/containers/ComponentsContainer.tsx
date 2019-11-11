@@ -11,27 +11,34 @@ import { addToBank, deliverComponent, StatusTeam } from '../actions';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 import { ComponentItem } from '../components/ComponentItem';
-import { changeStatus } from '../actions/TeamActions';
+import { changeStatus, noSkipTurn } from '../actions/TeamActions';
 import { canDeliverComponent, triggerEventComponent } from '../config/rules';
 
 function ComponentsContainer({
   currentTeamEstimating,
   onDeliverComponent,
+  onSkipsDelivery,
   lastEvaluatedComponent,
   nextTeam,
-  componentsToBeEvaluated
+  componentsToBeEvaluated,
+  teams
 }: {
   currentTeamEstimating?: Team;
   onDeliverComponent: Function;
+  onSkipsDelivery: Function;
   lastEvaluatedComponent: Component;
   nextTeam: Team;
   componentsToBeEvaluated: Component[];
+  teams: Team[];
 }) {
   return (
     <Row gutter={16}>
       {(currentTeamEstimating as Team).components.map(component => (
         <ComponentItem
+          // @ts-ignore
+          currentTeam={currentTeamEstimating}
           key={component.id}
+          onSkipsDelivery={onSkipsDelivery}
           teamId={(currentTeamEstimating as Team).id}
           component={component}
           nextTeam={nextTeam}
@@ -40,6 +47,7 @@ function ComponentsContainer({
             component,
             currentTeamEstimating
           )}
+          teams={teams}
           componentsToBeEvaluated={componentsToBeEvaluated}
           onDeliverComponent={onDeliverComponent}
         />
@@ -56,6 +64,7 @@ function mapStateToProps(state: JCCMUNOAppStore) {
   let indexNextTeam = state.Teams.indexOf(currentTeamEstimating) + 1;
   indexNextTeam = indexNextTeam < state.Teams.length ? indexNextTeam : 0;
   return {
+    teams: state.Teams,
     componentsToBeEvaluated: state.BankComponentsToBeEvaluated,
     nextTeam: state.Teams[indexNextTeam],
     lastEvaluatedComponent:
@@ -66,18 +75,35 @@ function mapStateToProps(state: JCCMUNOAppStore) {
 
 function mapDispatchToProps(dispatch: Dispatch) {
   return {
+    onSkipsDelivery: ({
+      teamId,
+      nextTeam
+    }: {
+      component: Component;
+      teamId: string;
+      nextTeam: Team;
+      componentsToBeEvaluated: Component[];
+      teams: Team[];
+    }) => {
+      alert(`Termina entrega para el Equipo ${Number(teamId) + 1}`);
+      dispatch(changeStatus(StatusTeam.ESTIMATING, nextTeam.id));
+      dispatch(noSkipTurn(teamId));
+      dispatch(changeStatus(StatusTeam.WAITING, teamId));
+    },
     onDeliverComponent: ({
       component,
       teamId,
       handleModalChooseModule,
       nextTeam,
-      componentsToBeEvaluated
+      componentsToBeEvaluated,
+      teams
     }: {
       component: Component;
       teamId: string;
       handleModalChooseModule: () => Promise<any>;
       nextTeam: Team;
       componentsToBeEvaluated: Component[];
+      teams: Team[];
     }) => {
       debugger;
       const promise: Promise<Component> = new Promise((resolve, reject) => {
@@ -114,7 +140,8 @@ function mapDispatchToProps(dispatch: Dispatch) {
             teamId: nextTeam.id,
             dispatch,
             lastEvaluatedComponent: newComponent || component,
-            componentsToBeEvaluated
+            componentsToBeEvaluated,
+            teams
           });
         })
         .catch(() => null);

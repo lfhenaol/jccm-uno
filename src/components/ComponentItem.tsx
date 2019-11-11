@@ -1,26 +1,35 @@
 import { Button, Card, Col, Icon, Modal, Row, Tooltip } from 'antd';
 import ReactHtmlParser from 'react-html-parser';
-import React, { useState } from 'react';
-import { Component, Modules, Team } from '../config/materials';
+import React, { useEffect, useState } from 'react';
+import {Component, CompoundComponents, Modules, Team} from '../config/materials';
 
 export function ComponentItem({
   component,
   teamId,
   onDeliverComponent,
+  onSkipsDelivery,
   onCanDeliverComponent,
   nextTeam,
-  componentsToBeEvaluated
+  componentsToBeEvaluated,
+  teams,
+  currentTeam
 }: {
   component: Component;
   teamId: string;
   onDeliverComponent: Function;
   onCanDeliverComponent: Function;
+  onSkipsDelivery: Function;
   nextTeam: Team;
+  teams: Team[];
   componentsToBeEvaluated: Component[];
+  currentTeam: Team;
 }) {
   const [resolvePromise, setResolvePromise] = useState<
     (module: Modules) => void
   >(() => null);
+  // TODO MACHETAZOOOOOO!
+  // @ts-ignore
+  window["skipTurn"] = currentTeam.skipTurn;
   const [rejectPromise, setRejectPromise] = useState<() => void>(() => null);
   const [isMouseOver, setIsMouseOver] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
@@ -41,6 +50,33 @@ export function ComponentItem({
       setModalVisible(true);
     });
   };
+  const handleOnDeliverComponent = () => {
+    onDeliverComponent({
+      component,
+      teamId,
+      handleModalChooseModule,
+      nextTeam,
+      componentsToBeEvaluated,
+      teams
+    });
+  };
+
+  useEffect(() => {
+    // @ts-ignore
+    if (window["skipTurn"]) {
+      // @ts-ignore
+      window["skipTurn"] = false;
+      alert(
+        `Dado que el último componente evaluado fue 
+          IMPEDIR ENTREGA DE ESTIMACIÓN, pasa la entrega al siguiente equipo`
+      );
+      onSkipsDelivery({
+        teamId,
+        nextTeam
+      });
+    }
+  });
+
   return (
     <Col style={{ marginBottom: 15 }} xs={4}>
       <Card
@@ -79,19 +115,7 @@ export function ComponentItem({
           justify="center"
         >
           <Col>
-            <Button
-              onClick={() =>
-                onDeliverComponent({
-                  component,
-                  teamId,
-                  handleModalChooseModule,
-                  nextTeam,
-                  componentsToBeEvaluated
-                })
-              }
-            >
-              Entregar
-            </Button>
+            <Button onClick={handleOnDeliverComponent}>Entregar</Button>
           </Col>
         </Row>
       </Card>

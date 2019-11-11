@@ -209,6 +209,7 @@ materials = getRandomComponents(materials);
 export interface Team {
   id: string;
   name: string;
+  skipTurn: boolean;
   status: StatusTeam;
   components: Component[];
 }
@@ -216,42 +217,49 @@ export interface Team {
 export const teams: Team[] = [
   {
     id: '0',
+    skipTurn: false,
     name: 'Equipo 1',
     status: StatusTeam.ESTIMATING,
     components: popSevenRandomComponents(materials)
   },
   {
     id: '1',
+    skipTurn: false,
     name: 'Equipo 2',
     status: StatusTeam.WAITING,
     components: popSevenRandomComponents(materials)
   },
   {
     id: '2',
+    skipTurn: false,
     name: 'Equipo 3',
     status: StatusTeam.WAITING,
     components: popSevenRandomComponents(materials)
   },
   {
     id: '3',
+    skipTurn: false,
     name: 'Equipo 4',
     status: StatusTeam.WAITING,
     components: popSevenRandomComponents(materials)
   },
   {
     id: '4',
+    skipTurn: false,
     name: 'Equipo 5',
     status: StatusTeam.WAITING,
     components: popSevenRandomComponents(materials)
   },
   {
     id: '5',
+    skipTurn: false,
     name: 'Equipo 6',
     status: StatusTeam.WAITING,
     components: popSevenRandomComponents(materials)
   },
   {
     id: '6',
+    skipTurn: false,
     name: 'Equipo 7',
     status: StatusTeam.WAITING,
     components: popSevenRandomComponents(materials)

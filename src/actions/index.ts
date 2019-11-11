@@ -9,6 +9,11 @@ import {
   UpdateModuleIntegratorComponentAction
 } from './TeamComponentsActions';
 import { AddToTeamsAction } from './TeamsActions';
+import {
+  ChangeStatusAction,
+  NoSkipTurnAction,
+  SkipTurnAction
+} from './TeamActions';
 
 export * from './EvaluatedComponentsActions';
 export * from './ComponentsToBeEvaluatedActions';
@@ -21,10 +26,15 @@ export type ResultsActionTypesI =
   | AddIterationWinnerTeamAction
   | AddGlobalWinnerTeamAction;
 
-export type TeamActionTypesI =
+export type TeamComponentActionTypesI =
   | AddComponentAction
   | DeliverComponentAction
   | UpdateDescriptionIntegratorComponentAction
   | UpdateModuleIntegratorComponentAction;
 
 export type TeamsActionTypesI = AddToTeamsAction;
+
+export type TeamActionTypesI =
+  | NoSkipTurnAction
+  | SkipTurnAction
+  | ChangeStatusAction;

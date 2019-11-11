@@ -4,8 +4,9 @@ import {
   IntegratorComponents,
   Team
 } from './materials';
-import { addComponent, deleteComponent } from '../actions';
+import { addComponent, deleteComponent, StatusTeam } from '../actions';
 import { Dispatch } from 'redux';
+import { skipTurn } from '../actions/TeamActions';
 
 export const canDeliverComponent = (
   lastEvaluatedComponent: Component,
@@ -13,8 +14,6 @@ export const canDeliverComponent = (
   currentTeamEstimating?: Team
 ): (() => boolean) => {
   return () => {
-    debugger;
-
     if (!lastEvaluatedComponent) {
       return (
         !currentComponent.integrator ||
@@ -88,12 +87,14 @@ export const triggerEventComponent = ({
   lastEvaluatedComponent,
   componentsToBeEvaluated,
   dispatch,
-  teamId
+  teamId,
+  teams
 }: {
   lastEvaluatedComponent: Component;
   componentsToBeEvaluated: Component[];
   dispatch: Dispatch;
   teamId: string;
+  teams: Team[];
 }) => {
   if (
     lastEvaluatedComponent.integrator &&
@@ -108,7 +109,34 @@ export const triggerEventComponent = ({
       dispatch(deleteComponent(componentsToBeEvaluated[i].id));
     }
     alert(
-      'Dado que el último componente evaluado es tomar cuatro componentes nuevos, le han sido asignados cuatro componentes.'
+      'Dado que el último componente evaluado es TOMAR CUATRO componentes nuevos, le han sido asignados CUATRO componentes.'
     );
+  } else if (lastEvaluatedComponent.compound) {
+    switch (lastEvaluatedComponent.type.code) {
+      case CompoundComponents.plusTwo:
+        for (
+          let i = componentsToBeEvaluated.length - 1;
+          i >= componentsToBeEvaluated.length - 2;
+          i--
+        ) {
+          dispatch(addComponent(componentsToBeEvaluated[i], teamId));
+          dispatch(deleteComponent(componentsToBeEvaluated[i].id));
+        }
+        alert(
+          'Dado que el último componente evaluado fue TOMAR DOS componentes nuevos, le han sido asignados DOS componentes.'
+        );
+        break;
+      case CompoundComponents.stop:
+        const currentTeamEstimating = teams.filter(
+          team => team.status === StatusTeam.ESTIMATING
+        )[0];
+        let indexNextTeam = teams.indexOf(currentTeamEstimating) + 1;
+        indexNextTeam = indexNextTeam < teams.length ? indexNextTeam : 0;
+        const idNextTeam = teams[indexNextTeam].id;
+        dispatch(skipTurn(idNextTeam));
+        break;
+      case CompoundComponents.reverse:
+        break;
+    }
   }
 };

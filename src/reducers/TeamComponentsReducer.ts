@@ -1,10 +1,10 @@
 import { Component } from '../config/materials';
 import { TeamComponentsActionTypes } from '../action-types';
-import { TeamActionTypesI } from '../actions';
+import { TeamComponentActionTypesI } from '../actions';
 
 export function teamComponentsReducer(
   state: Component[] = [],
-  action: TeamActionTypesI | any
+  action: TeamComponentActionTypesI | any
 ): Component[] {
   let updatedComponent: {} & Component & { mod: any };
   let newState: Component[];
