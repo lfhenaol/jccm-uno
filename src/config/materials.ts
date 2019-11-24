@@ -263,6 +263,27 @@ export const teams: Team[] = [
     name: 'Equipo 7',
     status: StatusTeam.WAITING,
     components: popSevenRandomComponents(materials)
+  },
+  {
+    id: '7',
+    skipTurn: false,
+    name: 'Equipo 8',
+    status: StatusTeam.WAITING,
+    components: popSevenRandomComponents(materials)
+  },
+  {
+    id: '8',
+    skipTurn: false,
+    name: 'Equipo 9',
+    status: StatusTeam.WAITING,
+    components: popSevenRandomComponents(materials)
+  },
+  {
+    id: '9',
+    skipTurn: false,
+    name: 'Equipo 10',
+    status: StatusTeam.WAITING,
+    components: popSevenRandomComponents(materials)
   }
 ];
 

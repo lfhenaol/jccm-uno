@@ -15,6 +15,7 @@ export function BankEvaluatedComponents({
     <Card
       title={component.name}
       style={{ height: 170 }}
+      className={`mod-${component.mod || 'none'}`}
       extra={
         <>
           <span>

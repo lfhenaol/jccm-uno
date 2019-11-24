@@ -86,12 +86,12 @@ const App: React.FC = () => {
             </Sider>
             <Content style={{ padding: '0 24px', minHeight: 280 }}>
               <BanksContainer />
-              <HistoryContainer />
+              { /*<HistoryContainer />*/}
             </Content>
             <Results dataset={dataset} columns={columns} />
           </Layout>
         </Content>
-        <Footer style={{ height: '200px', overflow: 'auto' }}>
+        <Footer style={{ height: '220px', overflow: 'auto' }}>
           <ComponentsContainer />
         </Footer>
       </Layout>

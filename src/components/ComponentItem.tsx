@@ -1,7 +1,7 @@
 import { Button, Card, Col, Icon, Modal, Row, Tooltip } from 'antd';
 import ReactHtmlParser from 'react-html-parser';
 import React, { useEffect, useState } from 'react';
-import {Component, CompoundComponents, Modules, Team} from '../config/materials';
+import { Component, Modules, Team } from '../config/materials';
 
 export function ComponentItem({
   component,
@@ -29,17 +29,15 @@ export function ComponentItem({
   >(() => null);
   // TODO MACHETAZOOOOOO!
   // @ts-ignore
-  window["skipTurn"] = currentTeam.skipTurn;
+  window['skipTurn'] = currentTeam.skipTurn;
   const [rejectPromise, setRejectPromise] = useState<() => void>(() => null);
   const [isMouseOver, setIsMouseOver] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const handleModalOk = (module: Modules) => {
-    debugger;
     setModalVisible(false);
     resolvePromise(module);
   };
   const handleModalCancel = () => {
-    debugger;
     setModalVisible(false);
     rejectPromise();
   };
@@ -63,9 +61,9 @@ export function ComponentItem({
 
   useEffect(() => {
     // @ts-ignore
-    if (window["skipTurn"]) {
+    if (window['skipTurn']) {
       // @ts-ignore
-      window["skipTurn"] = false;
+      window['skipTurn'] = false;
       alert(
         `Dado que el último componente evaluado fue 
           IMPEDIR ENTREGA DE ESTIMACIÓN, pasa la entrega al siguiente equipo`
@@ -96,7 +94,8 @@ export function ComponentItem({
             </Tooltip>
           </>
         }
-        hoverable={true}
+        hoverable={onCanDeliverComponent()}
+        className={onCanDeliverComponent() ? `mod-${component.mod || 'none'}` : 'disabled-component'}
         onMouseOver={() => setIsMouseOver(true)}
         onMouseLeave={() => setIsMouseOver(false)}
       >
