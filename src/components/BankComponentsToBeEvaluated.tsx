@@ -54,7 +54,7 @@ export function BankComponentsToBeEvaluated({
       hoverable
       style={{ width: 240 }}
       cover={
-        !lastComponentToBeEvaluated ? (
+        lastComponentToBeEvaluated ? (
           elemLastComponent(lastComponentToBeEvaluated)
         ) : (
           <Empty
