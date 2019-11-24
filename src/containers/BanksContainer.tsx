@@ -16,11 +16,13 @@ function BanksContainer({
   onTakeComponent,
   lastEvaluatedComponent,
   lastComponentToBeEvaluated,
-  nextTeam
+  nextTeam,
+  onNextTeam
 }: {
   currentTeamEstimating?: Team;
   EvaluatedComponents?: Component[];
   onTakeComponent?: Function;
+  onNextTeam: Function;
   lastEvaluatedComponent: Component;
   lastComponentToBeEvaluated: Component;
   nextTeam: Team;
@@ -36,6 +38,7 @@ function BanksContainer({
           currentTeamEstimating={currentTeamEstimating}
           // @ts-ignore
           onTakeComponent={onTakeComponent}
+          onNextTeam={onNextTeam}
           onCanTakeComponent={canTakeComponent(
             // @ts-ignore
             currentTeamEstimating,
@@ -73,6 +76,11 @@ function mapStateToProps(state: JCCMUNOAppStore) {
 
 function mapDispatchToProps(dispatch: Dispatch) {
   return {
+    onNextTeam({ nextTeam, teamId }: { nextTeam: Team; teamId: string }) {
+      alert(`Termina entrega para el Equipo ${Number(teamId) + 1}`);
+      dispatch(changeStatus(StatusTeam.ESTIMATING, nextTeam.id));
+      dispatch(changeStatus(StatusTeam.WAITING, teamId));
+    },
     onTakeComponent: ({
       component,
       teamId,
@@ -88,7 +96,9 @@ function mapDispatchToProps(dispatch: Dispatch) {
       dispatch(deleteComponent(component.id));
       if (!canDeliverComponent(lastEvaluatedComponent, component)()) {
         alert(
-          `El componente tomado ${component.name} no se puede entregar, termina entrega para el Equipo ${Number(
+          `El componente tomado ${
+            component.name
+          } no se puede entregar, termina entrega para el Equipo ${Number(
             teamId
           ) + 1}`
         );

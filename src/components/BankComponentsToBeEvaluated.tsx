@@ -9,7 +9,8 @@ export function BankComponentsToBeEvaluated({
   lastComponentToBeEvaluated,
   onCanTakeComponent,
   nextTeam,
-  lastEvaluatedComponent
+  lastEvaluatedComponent,
+  onNextTeam
 }: {
   onTakeComponent: Function;
   currentTeamEstimating: Team;
@@ -17,6 +18,7 @@ export function BankComponentsToBeEvaluated({
   onCanTakeComponent: Function;
   nextTeam: Team;
   lastEvaluatedComponent: Component;
+  onNextTeam: Function;
 }) {
   console.log('DISABLE TAKE COMPONENT', !onCanTakeComponent());
   const handleTakeComponent = (component: Component) => {
@@ -52,14 +54,25 @@ export function BankComponentsToBeEvaluated({
       hoverable
       style={{ width: 240 }}
       cover={
-        lastComponentToBeEvaluated ? (
+        !lastComponentToBeEvaluated ? (
           elemLastComponent(lastComponentToBeEvaluated)
         ) : (
           <Empty
             image={Empty.PRESENTED_IMAGE_SIMPLE}
             description="Sin componentes"
             style={{ height: 107 }}
-          />
+          >
+            <Button
+              // @ts-ignore
+              onClick={() =>
+                onNextTeam({ nextTeam, teamId: currentTeamEstimating.id })
+              }
+              htmlType="button"
+              type="danger"
+            >
+              Pasar entrega
+            </Button>
+          </Empty>
         )
       }
     >
