@@ -20,7 +20,6 @@ export function BankComponentsToBeEvaluated({
 }) {
   console.log('DISABLE TAKE COMPONENT', !onCanTakeComponent());
   const handleTakeComponent = (component: Component) => {
-    debugger;
     return onCanTakeComponent()
       ? onTakeComponent({
           component,

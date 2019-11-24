@@ -105,7 +105,6 @@ function mapDispatchToProps(dispatch: Dispatch) {
       componentsToBeEvaluated: Component[];
       teams: Team[];
     }) => {
-      debugger;
       const promise: Promise<Component> = new Promise((resolve, reject) => {
         if (
           component.integrator &&

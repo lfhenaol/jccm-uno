@@ -7,7 +7,7 @@ const { Item } = List;
 export function TeamItem({ team }: { team: Team }) {
   return (
     <Item>
-      <TeamMeta nameTeam={team.name} status={team.status} />
+      <TeamMeta numberComponents={team.components.length} nameTeam={team.name} status={team.status} />
     </Item>
   );
 }

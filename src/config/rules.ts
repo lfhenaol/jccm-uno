@@ -27,7 +27,11 @@ export const canDeliverComponent = (
         case IntegratorComponents.chooseModule:
           return true;
         case IntegratorComponents.plusFour:
-          debugger;
+          // @ts-ignore
+          if (!currentTeamEstimating) {
+            console.warn('TODO, llamada recursiva que no tiene en cuenta la variable currentTeamEstimating');
+            return true;
+          }
           // @ts-ignore
           return currentTeamEstimating.components.every(
             (component: Component) => {
