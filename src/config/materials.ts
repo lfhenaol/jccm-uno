@@ -32,7 +32,11 @@ export interface Component {
   mod: Modules | null;
   compound: boolean;
   integrator: boolean;
-  type: { text: string | undefined; icon: string | undefined, code: number | undefined };
+  type: {
+    text: string | undefined;
+    icon: string | undefined;
+    code: number | undefined;
+  };
   help: string;
   description: string;
   score: number;
@@ -204,8 +208,6 @@ let materials = [
   return component;
 });
 
-materials = getRandomComponents(materials);
-
 export interface Team {
   id: string;
   name: string;
@@ -214,77 +216,81 @@ export interface Team {
   components: Component[];
 }
 
-export const teams: Team[] = [
-  {
-    id: '0',
-    skipTurn: false,
-    name: 'Equipo 1',
-    status: StatusTeam.ESTIMATING,
-    components: popSevenRandomComponents(materials)
-  },
-  {
-    id: '1',
-    skipTurn: false,
-    name: 'Equipo 2',
-    status: StatusTeam.WAITING,
-    components: popSevenRandomComponents(materials)
-  },
-  {
-    id: '2',
-    skipTurn: false,
-    name: 'Equipo 3',
-    status: StatusTeam.WAITING,
-    components: popSevenRandomComponents(materials)
-  },
-  {
-    id: '3',
-    skipTurn: false,
-    name: 'Equipo 4',
-    status: StatusTeam.WAITING,
-    components: popSevenRandomComponents(materials)
-  },
-  {
-    id: '4',
-    skipTurn: false,
-    name: 'Equipo 5',
-    status: StatusTeam.WAITING,
-    components: popSevenRandomComponents(materials)
-  },
-  {
-    id: '5',
-    skipTurn: false,
-    name: 'Equipo 6',
-    status: StatusTeam.WAITING,
-    components: popSevenRandomComponents(materials)
-  },
-  {
-    id: '6',
-    skipTurn: false,
-    name: 'Equipo 7',
-    status: StatusTeam.WAITING,
-    components: popSevenRandomComponents(materials)
-  },
-  {
-    id: '7',
-    skipTurn: false,
-    name: 'Equipo 8',
-    status: StatusTeam.WAITING,
-    components: popSevenRandomComponents(materials)
-  },
-  {
-    id: '8',
-    skipTurn: false,
-    name: 'Equipo 9',
-    status: StatusTeam.WAITING,
-    components: popSevenRandomComponents(materials)
-  },
-  {
-    id: '9',
-    skipTurn: false,
-    name: 'Equipo 10',
-    status: StatusTeam.WAITING,
-    components: popSevenRandomComponents(materials)
-  }
-];
+export function getMaterials() {
+  const newMaterials = getRandomComponents(deepCloneObject(materials));
 
-export default materials;
+  const teams: Team[] = [
+    {
+      id: '0',
+      skipTurn: false,
+      name: 'Equipo 1',
+      status: StatusTeam.ESTIMATING,
+      components: popSevenRandomComponents(newMaterials)
+    },
+    {
+      id: '1',
+      skipTurn: false,
+      name: 'Equipo 2',
+      status: StatusTeam.WAITING,
+      components: popSevenRandomComponents(newMaterials)
+    },
+    {
+      id: '2',
+      skipTurn: false,
+      name: 'Equipo 3',
+      status: StatusTeam.WAITING,
+      components: popSevenRandomComponents(newMaterials)
+    },
+    {
+      id: '3',
+      skipTurn: false,
+      name: 'Equipo 4',
+      status: StatusTeam.WAITING,
+      components: popSevenRandomComponents(newMaterials)
+    },
+    {
+      id: '4',
+      skipTurn: false,
+      name: 'Equipo 5',
+      status: StatusTeam.WAITING,
+      components: popSevenRandomComponents(newMaterials)
+    },
+    {
+      id: '5',
+      skipTurn: false,
+      name: 'Equipo 6',
+      status: StatusTeam.WAITING,
+      components: popSevenRandomComponents(newMaterials)
+    },
+    {
+      id: '6',
+      skipTurn: false,
+      name: 'Equipo 7',
+      status: StatusTeam.WAITING,
+      components: popSevenRandomComponents(newMaterials)
+    },
+    {
+      id: '7',
+      skipTurn: false,
+      name: 'Equipo 8',
+      status: StatusTeam.WAITING,
+      components: popSevenRandomComponents(newMaterials)
+    },
+    {
+      id: '8',
+      skipTurn: false,
+      name: 'Equipo 9',
+      status: StatusTeam.WAITING,
+      components: popSevenRandomComponents(newMaterials)
+    },
+    {
+      id: '9',
+      skipTurn: false,
+      name: 'Equipo 10',
+      status: StatusTeam.WAITING,
+      components: popSevenRandomComponents(newMaterials)
+    }
+  ];
+
+  return { newMaterials, teams };
+}

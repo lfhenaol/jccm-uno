@@ -3,7 +3,7 @@ import { ResultsActionTypes } from '../action-types';
 export interface IterationWinnerTeam {
   team: string;
   score: number;
-  iteration: string;
+  iteration: any;
 }
 
 export interface GlobalWinnerTeam {

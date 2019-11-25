@@ -3,14 +3,15 @@ import ReactDOM from 'react-dom';
 import App from './containers/App';
 import * as serviceWorker from './serviceWorker';
 import './app.less';
-import { Team, teams } from './config/materials';
+import {getMaterials, Team} from './config/materials';
 
-export const TeamsContext = createContext<Team[]>([]);
+export const MaterialsContext = createContext<{teams:Team[], materials: any}>({teams: [], materials: {}});
+const {teams, newMaterials: materials} = getMaterials();
 
 ReactDOM.render(
-  <TeamsContext.Provider value={teams}>
+  <MaterialsContext.Provider value={{teams, materials}}>
     <App />
-  </TeamsContext.Provider>,
+  </MaterialsContext.Provider>,
   document.getElementById('root')
 );
 

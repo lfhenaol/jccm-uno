@@ -67,6 +67,7 @@ export function BankComponentsToBeEvaluated({
               onClick={() =>
                 onNextTeam({ nextTeam, teamId: currentTeamEstimating.id })
               }
+              disabled={!onCanTakeComponent()}
               htmlType="button"
               type="danger"
             >

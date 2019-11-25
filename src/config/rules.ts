@@ -22,20 +22,23 @@ export const canDeliverComponent = (
       );
     }
 
-    if (currentComponent.integrator) {
+    if (currentComponent && currentComponent.integrator) {
       switch (currentComponent.type.code) {
         case IntegratorComponents.chooseModule:
           return true;
         case IntegratorComponents.plusFour:
           // @ts-ignore
           if (!currentTeamEstimating) {
-            console.warn('TODO, llamada recursiva que no tiene en cuenta la variable currentTeamEstimating');
+            console.warn(
+              'TODO, llamada recursiva que no tiene en cuenta la variable currentTeamEstimating'
+            );
             return true;
           }
           // @ts-ignore
           return currentTeamEstimating.components.every(
             (component: Component) => {
               if (
+                component &&
                 component.integrator &&
                 component.type.code === IntegratorComponents.plusFour
               ) {
@@ -59,12 +62,18 @@ export const canDeliverComponent = (
         case CompoundComponents.reverse:
         case CompoundComponents.stop:
         case CompoundComponents.plusTwo:
-          return lastEvaluatedComponent.mod === currentComponent.mod;
+          return (
+            lastEvaluatedComponent &&
+            currentComponent &&
+            lastEvaluatedComponent.mod === currentComponent.mod
+          );
       }
     } else {
       return (
-        lastEvaluatedComponent.mod === currentComponent.mod ||
-        lastEvaluatedComponent.score === currentComponent.score
+        lastEvaluatedComponent &&
+        currentComponent &&
+        (lastEvaluatedComponent.mod === currentComponent.mod ||
+          lastEvaluatedComponent.score === currentComponent.score)
       );
     }
 
@@ -104,6 +113,12 @@ export const triggerEventComponent = ({
     lastEvaluatedComponent.integrator &&
     lastEvaluatedComponent.type.code === IntegratorComponents.plusFour
   ) {
+    alert(
+      'Dado que el último componente evaluado es TOMAR CUATRO componentes nuevos, le han sido asignados CUATRO componentes.'
+    );
+    if (componentsToBeEvaluated.length === 0) {
+      return;
+    }
     for (
       let i = componentsToBeEvaluated.length - 1;
       i >= componentsToBeEvaluated.length - 4;
@@ -112,12 +127,15 @@ export const triggerEventComponent = ({
       dispatch(addComponent(componentsToBeEvaluated[i], teamId));
       dispatch(deleteComponent(componentsToBeEvaluated[i].id));
     }
-    alert(
-      'Dado que el último componente evaluado es TOMAR CUATRO componentes nuevos, le han sido asignados CUATRO componentes.'
-    );
   } else if (lastEvaluatedComponent.compound) {
     switch (lastEvaluatedComponent.type.code) {
       case CompoundComponents.plusTwo:
+        alert(
+          'Dado que el último componente evaluado fue TOMAR DOS componentes nuevos, le han sido asignados DOS componentes.'
+        );
+        if (componentsToBeEvaluated.length === 0) {
+          break;
+        }
         for (
           let i = componentsToBeEvaluated.length - 1;
           i >= componentsToBeEvaluated.length - 2;
@@ -126,9 +144,6 @@ export const triggerEventComponent = ({
           dispatch(addComponent(componentsToBeEvaluated[i], teamId));
           dispatch(deleteComponent(componentsToBeEvaluated[i].id));
         }
-        alert(
-          'Dado que el último componente evaluado fue TOMAR DOS componentes nuevos, le han sido asignados DOS componentes.'
-        );
         break;
       case CompoundComponents.stop:
         const currentTeamEstimating = teams.filter(

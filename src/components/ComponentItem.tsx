@@ -65,8 +65,7 @@ export function ComponentItem({
       // @ts-ignore
       window['skipTurn'] = false;
       alert(
-        `Dado que el último componente evaluado fue 
-          IMPEDIR ENTREGA DE ESTIMACIÓN, pasa la entrega al siguiente equipo`
+        `Dado que el último componente evaluado fue IMPEDIR ENTREGA DE ESTIMACIÓN, pasa la entrega al siguiente equipo`
       );
       onSkipsDelivery({
         teamId,
@@ -76,6 +75,7 @@ export function ComponentItem({
   });
 
   return (
+      !component ? 'NO_COMPONENTS' :
     <Col style={{ marginBottom: 15 }} xs={4}>
       <Card
         style={{ height: 150 }}

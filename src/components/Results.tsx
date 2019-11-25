@@ -8,7 +8,7 @@ export function Results({ columns, dataset }: any) {
     <Sider width={300} style={{ background: '#fff' }}>
       <Title level={3}>Resultados</Title>
       <Table
-        showHeader={false}
+        showHeader={true}
         pagination={false}
         columns={columns}
         dataSource={dataset}
