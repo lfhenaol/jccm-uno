@@ -38,7 +38,7 @@ export type JCCMUNOAppStore = ReturnType<typeof JCCMUNOApp>;
 //   Teams: [
 //     {
 //       name: 'Equipo 1',
-//       status: StatusTeam.WAITING,
+//       status: StatusTeam.ESPERANDO,
 //       components: [
 //         {
 //           name: '',

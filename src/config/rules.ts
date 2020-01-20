@@ -147,7 +147,7 @@ export const triggerEventComponent = ({
         break;
       case CompoundComponents.stop:
         const currentTeamEstimating = teams.filter(
-          team => team.status === StatusTeam.ESTIMATING
+          team => team.status === StatusTeam.ESTIMANDO
         )[0];
         let indexNextTeam = teams.indexOf(currentTeamEstimating) + 1;
         indexNextTeam = indexNextTeam < teams.length ? indexNextTeam : 0;

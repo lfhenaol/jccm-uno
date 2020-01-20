@@ -1,6 +1,6 @@
-import { deepCloneObject } from '../helpers/deep-clone-object';
-import { Random } from 'random-js';
-import { StatusTeam } from '../actions';
+import {deepCloneObject} from '../helpers/deep-clone-object';
+import {Random} from 'random-js';
+import {StatusTeam} from '../actions';
 
 export enum Modules {
   W = 'W',
@@ -216,81 +216,33 @@ export interface Team {
   components: Component[];
 }
 
-export function getMaterials() {
+export function getMaterials(): { newMaterials: any[]; teams: Team[] } {
   const newMaterials = getRandomComponents(deepCloneObject(materials));
-
-  const teams: Team[] = [
-    {
-      id: '0',
-      skipTurn: false,
-      name: 'Equipo 1',
-      status: StatusTeam.ESTIMATING,
-      components: popSevenRandomComponents(newMaterials)
-    },
-    {
-      id: '1',
-      skipTurn: false,
-      name: 'Equipo 2',
-      status: StatusTeam.WAITING,
-      components: popSevenRandomComponents(newMaterials)
-    },
-    {
-      id: '2',
-      skipTurn: false,
-      name: 'Equipo 3',
-      status: StatusTeam.WAITING,
-      components: popSevenRandomComponents(newMaterials)
-    },
-    {
-      id: '3',
-      skipTurn: false,
-      name: 'Equipo 4',
-      status: StatusTeam.WAITING,
-      components: popSevenRandomComponents(newMaterials)
-    },
-    {
-      id: '4',
-      skipTurn: false,
-      name: 'Equipo 5',
-      status: StatusTeam.WAITING,
-      components: popSevenRandomComponents(newMaterials)
-    },
-    {
-      id: '5',
-      skipTurn: false,
-      name: 'Equipo 6',
-      status: StatusTeam.WAITING,
-      components: popSevenRandomComponents(newMaterials)
-    },
-    {
-      id: '6',
-      skipTurn: false,
-      name: 'Equipo 7',
-      status: StatusTeam.WAITING,
-      components: popSevenRandomComponents(newMaterials)
-    },
-    {
-      id: '7',
-      skipTurn: false,
-      name: 'Equipo 8',
-      status: StatusTeam.WAITING,
-      components: popSevenRandomComponents(newMaterials)
-    },
-    {
-      id: '8',
-      skipTurn: false,
-      name: 'Equipo 9',
-      status: StatusTeam.WAITING,
-      components: popSevenRandomComponents(newMaterials)
-    },
-    {
-      id: '9',
-      skipTurn: false,
-      name: 'Equipo 10',
-      status: StatusTeam.WAITING,
-      components: popSevenRandomComponents(newMaterials)
-    }
-  ];
+  const inputTeams = prompt(
+    'Ingrese la cantidad de equipos que van a jugar (debe ser mayor o igual a 3 y menor o igual a 10)'
+  );
+  const numberTeams = Number(inputTeams);
+  let teams;
+  if (
+    isNaN(numberTeams) ||
+    (!isNaN(numberTeams) && (numberTeams < 3 || numberTeams > 10)) ||
+    !numberTeams
+  ) {
+    alert('La cantidad de equipos ingresada no es válida');
+    return getMaterials();
+  } else {
+    teams = new Array(numberTeams);
+    teams.fill(null);
+    teams = teams.map((team, index) => {
+      return {
+        id: index.toString(),
+        skipTurn: false,
+        name: `Equipo ${index + 1}`,
+        status: index === 0 ? StatusTeam.ESTIMANDO : StatusTeam.ESPERANDO,
+        components: popSevenRandomComponents(newMaterials)
+      };
+    });
+  }
 
   return { newMaterials, teams };
 }

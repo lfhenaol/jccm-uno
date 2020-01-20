@@ -56,7 +56,7 @@ function BanksContainer({
 function mapStateToProps(state: JCCMUNOAppStore) {
   console.log(state);
   const currentTeamEstimating = state.Teams.filter(
-    team => team.status === StatusTeam.ESTIMATING
+    team => team.status === StatusTeam.ESTIMANDO
   )[0];
   let indexNextTeam = state.Teams.indexOf(currentTeamEstimating) + 1;
   indexNextTeam = indexNextTeam < state.Teams.length ? indexNextTeam : 0;
@@ -78,8 +78,8 @@ function mapDispatchToProps(dispatch: Dispatch) {
   return {
     onNextTeam({ nextTeam, teamId }: { nextTeam: Team; teamId: string }) {
       alert(`Termina entrega para el Equipo ${Number(teamId) + 1}`);
-      dispatch(changeStatus(StatusTeam.ESTIMATING, nextTeam.id));
-      dispatch(changeStatus(StatusTeam.WAITING, teamId));
+      dispatch(changeStatus(StatusTeam.ESTIMANDO, nextTeam.id));
+      dispatch(changeStatus(StatusTeam.ESPERANDO, teamId));
     },
     onTakeComponent: ({
       component,
@@ -102,8 +102,8 @@ function mapDispatchToProps(dispatch: Dispatch) {
             teamId
           ) + 1}`
         );
-        dispatch(changeStatus(StatusTeam.ESTIMATING, nextTeam.id));
-        dispatch(changeStatus(StatusTeam.WAITING, teamId));
+        dispatch(changeStatus(StatusTeam.ESTIMANDO, nextTeam.id));
+        dispatch(changeStatus(StatusTeam.ESPERANDO, teamId));
       }
     }
   };

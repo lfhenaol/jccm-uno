@@ -75,6 +75,7 @@ function ComponentsContainer({
       ) : (
         (currentTeamEstimating as Team).components.map(component => (
           <ComponentItem
+            key={component.id}
             // @ts-ignore
             currentTeam={currentTeamEstimating}
             onSkipsDelivery={onSkipsDelivery}
@@ -99,7 +100,7 @@ function ComponentsContainer({
 function mapStateToProps(state: JCCMUNOAppStore) {
   console.log(state);
   const currentTeamEstimating = state.Teams.filter(
-    team => team.status === StatusTeam.ESTIMATING
+    team => team.status === StatusTeam.ESTIMANDO
   )[0];
   let indexNextTeam = state.Teams.indexOf(currentTeamEstimating) + 1;
   indexNextTeam = indexNextTeam < state.Teams.length ? indexNextTeam : 0;
@@ -134,7 +135,7 @@ function mapDispatchToProps(dispatch: Dispatch) {
           });
         });
 
-      if (results.length < 5) {
+      if (results.length < 4) {
         const iteration = (results.length + 1).toString();
         dispatch(
           addIterationWinnerTeam({
@@ -156,7 +157,13 @@ function mapDispatchToProps(dispatch: Dispatch) {
             minorScore = result.score;
           }
         });
-        dispatch(addIterationWinnerTeam({score: globalWinner.score, team: globalWinner.team, iteration: '\ud83e\udd73 \ud83c\udf89\n'}));
+        dispatch(
+          addIterationWinnerTeam({
+            score: globalWinner.score,
+            team: globalWinner.team,
+            iteration: '\ud83e\udd73 \ud83c\udf89\n'
+          })
+        );
         alert(
           `El equipo que consigue asegurar por completo el proyecto es ${globalWinner.team}`
         );
@@ -174,9 +181,9 @@ function mapDispatchToProps(dispatch: Dispatch) {
       teams: Team[];
     }) => {
       alert(`Termina entrega para el Equipo ${Number(teamId) + 1}`);
-      dispatch(changeStatus(StatusTeam.ESTIMATING, nextTeam.id));
+      dispatch(changeStatus(StatusTeam.ESTIMANDO, nextTeam.id));
       dispatch(noSkipTurn(teamId));
-      dispatch(changeStatus(StatusTeam.WAITING, teamId));
+      dispatch(changeStatus(StatusTeam.ESPERANDO, teamId));
     },
     onDeliverComponent: ({
       component,
@@ -218,14 +225,15 @@ function mapDispatchToProps(dispatch: Dispatch) {
 
       promise
         .then((newComponent: Component) => {
-          const compsCurrentEstimatingTeam = teams.filter((team)=> team.id === teamId)
-              .map((team)=> team.components)[0];
+          const compsCurrentEstimatingTeam = teams
+            .filter(team => team.id === teamId)
+            .map(team => team.components)[0];
           dispatch(addToBank(newComponent || component));
           dispatch(deliverComponent(component.id, teamId));
           if (compsCurrentEstimatingTeam.length > 1) {
             alert(`Termina entrega para el Equipo ${Number(teamId) + 1}`);
-            dispatch(changeStatus(StatusTeam.ESTIMATING, nextTeam.id));
-            dispatch(changeStatus(StatusTeam.WAITING, teamId));
+            dispatch(changeStatus(StatusTeam.ESTIMANDO, nextTeam.id));
+            dispatch(changeStatus(StatusTeam.ESPERANDO, teamId));
             triggerEventComponent({
               teamId: nextTeam.id,
               dispatch,

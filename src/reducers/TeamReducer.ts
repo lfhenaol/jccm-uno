@@ -27,7 +27,7 @@ export function teamReducer(
           id: '',
           skipTurn: false,
           name: '',
-          status: StatusTeam.WAITING,
+          status: StatusTeam.ESPERANDO,
           components: teamComponentsReducer(void 0, null)
         };
       }
