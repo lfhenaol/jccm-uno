@@ -19,9 +19,7 @@ const App: React.FC = () => {
 
   const rootReducer = (
     state: any,
-    action: {
-      type: 'RELOAD';
-    }
+    action: any
   ) => {
     if (action.type === 'RELOAD') {
       const { teams: Teams, newMaterials: materials } = getMaterials();
